@@ -149,7 +149,7 @@ class MainWindow(QMainWindow):
         cities = [
             ClockCity("Bogotá", -5),
             ClockCity("Nueva York", -4),
-            ClockCity("Madrid", 2),
+            ClockCity("Madrid", +2),
             ClockCity("Tokio", 9),
         ]
 
