@@ -12,16 +12,64 @@ from PySide6.QtWidgets import (
 
 
 class TimerDialog(QDialog):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
 
         self.setWindowTitle("Temporizador")
         self.setModal(False)
+        self.setWindowModality(Qt.NonModal)
+        self.setWindowFlag(Qt.Window, True)
+        self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
+        self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
+
         self.resize(420, 320)
         self.setMinimumSize(380, 280)
 
         self.remaining_seconds = 0
         self.timer_running = False
+        self.theme_name = "Rose"
+
+        self.themes = {
+            "Rose": {
+                "background": "#0c101d",
+                "title": "#ff87a0",
+                "text": "#f3efff",
+                "muted": "#d4c8ef",
+                "status": "#ffd0d8",
+                "input_bg": "#141b2c",
+                "input_border": "rgba(199, 120, 255, 0.22)",
+                "button_bg": "#171f33",
+                "button_hover": "#1f2942",
+                "button_border": "rgba(199, 120, 255, 0.20)",
+                "button_hover_border": "rgba(255, 122, 150, 0.38)",
+            },
+            "Emerald": {
+                "background": "#0a1412",
+                "title": "#62e8c5",
+                "text": "#effff9",
+                "muted": "#c6f0e4",
+                "status": "#bdf7e6",
+                "input_bg": "#12211e",
+                "input_border": "rgba(76, 224, 186, 0.24)",
+                "button_bg": "#162925",
+                "button_hover": "#1c3732",
+                "button_border": "rgba(76, 224, 186, 0.22)",
+                "button_hover_border": "rgba(76, 224, 186, 0.42)",
+            },
+            "Gold": {
+                "background": "#16110a",
+                "title": "#f2c14e",
+                "text": "#fff7e8",
+                "muted": "#f1dfb4",
+                "status": "#ffe0a0",
+                "input_bg": "#241b12",
+                "input_border": "rgba(242, 193, 78, 0.24)",
+                "button_bg": "#2b2015",
+                "button_hover": "#3a2a1a",
+                "button_border": "rgba(242, 193, 78, 0.22)",
+                "button_hover_border": "rgba(242, 193, 78, 0.42)",
+            },
+        }
 
         self.title_label = QLabel("Temporizador")
         self.title_label.setObjectName("titleLabel")
@@ -54,6 +102,11 @@ class TimerDialog(QDialog):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self._tick)
         self.timer.setInterval(1000)
+
+    def set_theme(self, theme_name: str) -> None:
+        if theme_name in self.themes:
+            self.theme_name = theme_name
+            self._apply_styles()
 
     def _build_ui(self) -> None:
         root_layout = QVBoxLayout(self)
@@ -98,69 +151,71 @@ class TimerDialog(QDialog):
         return container
 
     def _apply_styles(self) -> None:
+        palette = self.themes[self.theme_name]
+
         self.setStyleSheet(
-            """
-            QDialog {
-                background-color: #0c101d;
-            }
+            f"""
+            QDialog {{
+                background-color: {palette["background"]};
+            }}
 
-            QLabel {
-                color: #f3efff;
+            QLabel {{
+                color: {palette["text"]};
                 background: transparent;
-            }
+            }}
 
-            QLabel#titleLabel {
+            QLabel#titleLabel {{
                 font-size: 22px;
                 font-weight: 900;
-                color: #ff87a0;
-            }
+                color: {palette["title"]};
+            }}
 
-            QLabel#fieldLabel {
+            QLabel#fieldLabel {{
                 font-size: 13px;
                 font-weight: 700;
-                color: #d4c8ef;
-            }
+                color: {palette["muted"]};
+            }}
 
-            QLabel#timeLabel {
+            QLabel#timeLabel {{
                 font-size: 48px;
                 font-weight: 900;
-                color: #f5f1ff;
+                color: {palette["text"]};
                 padding-top: 8px;
                 padding-bottom: 4px;
-            }
+            }}
 
-            QLabel#statusLabel {
+            QLabel#statusLabel {{
                 font-size: 13px;
                 font-weight: 700;
-                color: #ffd0d8;
+                color: {palette["status"]};
                 padding-bottom: 4px;
-            }
+            }}
 
-            QSpinBox {
-                background-color: #141b2c;
-                color: #f2eeff;
-                border: 1px solid rgba(199, 120, 255, 0.22);
+            QSpinBox {{
+                background-color: {palette["input_bg"]};
+                color: {palette["text"]};
+                border: 1px solid {palette["input_border"]};
                 border-radius: 12px;
                 padding: 10px;
                 font-size: 15px;
                 font-weight: 700;
                 min-height: 24px;
-            }
+            }}
 
-            QPushButton {
-                background-color: #171f33;
-                color: #f2eeff;
-                border: 1px solid rgba(199, 120, 255, 0.20);
+            QPushButton {{
+                background-color: {palette["button_bg"]};
+                color: {palette["text"]};
+                border: 1px solid {palette["button_border"]};
                 border-radius: 14px;
                 padding: 10px 16px;
                 font-size: 14px;
                 font-weight: 800;
-            }
+            }}
 
-            QPushButton:hover {
-                background-color: #1f2942;
-                border: 1px solid rgba(255, 122, 150, 0.38);
-            }
+            QPushButton:hover {{
+                background-color: {palette["button_hover"]};
+                border: 1px solid {palette["button_hover_border"]};
+            }}
             """
         )
 

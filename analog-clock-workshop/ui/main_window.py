@@ -97,7 +97,8 @@ class MainWindow(QMainWindow):
         self.clock_widget.setMaximumSize(560, 560)
         self.clock_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        self.timer_dialog = TimerDialog()
+        self.timer_dialog = TimerDialog(self)
+        self.timer_dialog.set_theme(self.theme_order[self.current_theme_index])
 
         self.top_label = QLabel("LISTA CIRCULAR DOBLE")
         self.top_label.setObjectName("topLabel")
@@ -359,6 +360,7 @@ class MainWindow(QMainWindow):
         self.theme_button.setText(f"Tema: {self.theme_labels[theme_key]}")
         self._apply_styles()
         self._apply_theme_to_clock()
+        self.timer_dialog.set_theme(theme_key)
 
     def _apply_theme_to_clock(self) -> None:
         theme_key = self.theme_order[self.current_theme_index]
