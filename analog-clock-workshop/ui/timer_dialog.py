@@ -14,6 +14,8 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
+from core.speech_service import speak_text
+
 
 class TimerDialog(QDialog):
     def __init__(self, parent=None) -> None:
@@ -327,6 +329,7 @@ class TimerDialog(QDialog):
             self.time_label.setText("00:00")
             self.status_label.setText("Tiempo finalizado.")
             self._play_finish_sound()
+            self._speak_finish_message()
             self._update_button_states()
 
     def _update_time_label(self) -> None:
@@ -345,6 +348,12 @@ class TimerDialog(QDialog):
             winsound.Beep(1400, 350)
         except Exception:
             QApplication.beep()
+
+    def _speak_finish_message(self) -> None:
+        try:
+            speak_text("El temporizador ha finalizado.")
+        except Exception:
+            pass
 
     def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)
