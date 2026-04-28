@@ -1,3 +1,5 @@
+import winsound
+
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
@@ -168,8 +170,8 @@ class TimerDialog(QDialog):
         buttons_card = QFrame()
         buttons_card.setObjectName("card")
         buttons_layout = QHBoxLayout(buttons_card)
-        buttons_layout.setContentsMargins(16, 16, 16, 16)
-        buttons_layout.setSpacing(10)
+        buttons_layout.setContentsMargins(14, 12, 14, 12)
+        buttons_layout.setSpacing(8)
         buttons_layout.addWidget(self.start_button)
         buttons_layout.addWidget(self.pause_button)
         buttons_layout.addWidget(self.reset_button)
@@ -252,11 +254,13 @@ class TimerDialog(QDialog):
                 background-color: {palette["button_bg"]};
                 color: {palette["text"]};
                 border: 1px solid {palette["button_border"]};
-                border-radius: 14px;
-                padding: 12px 14px;
-                font-size: 15px;
+                border-radius: 12px;
+                padding: 8px 12px;
+                font-size: 14px;
                 font-weight: 800;
-                min-width: 100px;
+                min-width: 88px;
+                max-width: 110px;
+                min-height: 18px;
             }}
 
             QPushButton#actionButton:hover {{
@@ -322,7 +326,7 @@ class TimerDialog(QDialog):
             self.timer_running = False
             self.time_label.setText("00:00")
             self.status_label.setText("Tiempo finalizado.")
-            QApplication.beep()
+            self._play_finish_sound()
             self._update_button_states()
 
     def _update_time_label(self) -> None:
@@ -333,6 +337,14 @@ class TimerDialog(QDialog):
     def _update_button_states(self) -> None:
         self.pause_button.setEnabled(self.timer_running)
         self.reset_button.setEnabled(self.timer_running or self.remaining_seconds > 0)
+
+    def _play_finish_sound(self) -> None:
+        try:
+            winsound.Beep(1200, 250)
+            winsound.Beep(1000, 250)
+            winsound.Beep(1400, 350)
+        except Exception:
+            QApplication.beep()
 
     def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)
