@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
 )
 
 from core.clock_city import ClockCity
+from core.speech_service import speak_text
 from core.world_clock_cycle import WorldClockCycle
 from ui.clock_face_widget import ClockFaceWidget
 from ui.timer_dialog import TimerDialog
@@ -133,6 +134,9 @@ class MainWindow(QMainWindow):
         self.timer_button = QPushButton("Temporizador")
         self.timer_button.setObjectName("secondaryButton")
 
+        self.speak_button = QPushButton("Decir hora")
+        self.speak_button.setObjectName("secondaryButton")
+
         self.city_buttons: dict[str, QPushButton] = {}
         self.button_group = QButtonGroup(self)
         self.button_group.setExclusive(True)
@@ -213,6 +217,7 @@ class MainWindow(QMainWindow):
         extras_row.setAlignment(Qt.AlignCenter)
         extras_row.addWidget(self.theme_button)
         extras_row.addWidget(self.timer_button)
+        extras_row.addWidget(self.speak_button)
 
         selector_layout.addLayout(navigation_row)
         selector_layout.addLayout(extras_row)
@@ -336,6 +341,7 @@ class MainWindow(QMainWindow):
         self.next_button.clicked.connect(self._go_next_city)
         self.theme_button.clicked.connect(self._change_theme)
         self.timer_button.clicked.connect(self._open_timer_dialog)
+        self.speak_button.clicked.connect(self._speak_current_time)
 
     def _setup_timers(self) -> None:
         self.live_info_timer = QTimer(self)
@@ -428,6 +434,22 @@ class MainWindow(QMainWindow):
             f"{day_names[moment.weekday()]}, "
             f"{moment.day:02d} de {month_names[moment.month]} de {moment.year}"
         )
+    
+    def _speak_current_time(self) -> None:
+        city = self.city_cycle.current_city()
+        if city is None:
+            return
+
+        city_time = self._get_current_city_time()
+        message = self._build_speech_text(city.name, city_time)
+        speak_text(message)
+
+
+    def _build_speech_text(self, city_name: str, city_time: datetime) -> str:
+        hour = city_time.hour
+        minute = city_time.minute
+
+        return f"En {city_name}, son las {hour} horas con {minute:02d} minutos."
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key_Left:
@@ -452,6 +474,10 @@ class MainWindow(QMainWindow):
 
         if event.key() == Qt.Key_T:
             self._select_city_by_name("Tokio")
+            return
+        
+        if event.key() == Qt.Key_H:
+            self._speak_current_time()
             return
 
         super().keyPressEvent(event)
